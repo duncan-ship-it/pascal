@@ -72,7 +72,7 @@ def main():
     render(rows, len_lim=16)
 
 
-LINES, COLS = os.get_terminal_size()  # cols may need to be adjusted depending of number of rows
+LINES, COLS = os.get_terminal_size()  # cols may need to be adjusted depending on number of rows
 
 
 
