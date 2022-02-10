@@ -1,23 +1,18 @@
 import os
+import sys
 from functools import lru_cache
 from ansiwrap import ansilen
 
 os.system('color')  # enable ANSI escape characters on windows terminal
 
 
-"""
-Very Hard: Use a language/format that allows the colouring of letters (most console outputs should allow this) and make 
-any number divisible by 2 blue, and any number divisible by 3 red, any number divisible by both purple.
-"""
-
-
 class Color:
     colors = {
         # credit: https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal#answer-39452138
         'WHITE': '\x1b[1;37;40m',
-        'RED': '\x1b[1;34;40m',
-        'BLUE': '\x1b[1;32;40m',
-        'GREEN': '\x1b[1;31;40m',
+        'BLUE': '\x1b[1;34;40m',
+        'RED': '\x1b[1;31;40m',
+        'PURPLE': '\x1b[1;35;40m',
         'END': '\x1b[0m'
     }
 
@@ -43,6 +38,7 @@ def get(arr, index, default=0):
     return default
 
 
+# cache last call for calculation in next call
 @lru_cache(maxsize=2)
 def pascal(n):
     if n == 1:
@@ -50,30 +46,33 @@ def pascal(n):
     return [get(pascal(n-1), k-1) + get(pascal(n-1), k) for k in range(n)]
 
 
-# center string containing ansi chars given width
+# center string containing hidden ansi chars
 def adjust(s, cols):
     if ansilen(s) > cols:
         return s
     else:
-        return f"{((cols-ansilen(s))//2 + 1)*' '}{s}"
+        return f"{((cols - ansilen(s)) // 2) * ' '}{s}"
 
 
-def render(rows, len_lim=8):
-    width = min(len(str(max(rows[-1]))), len_lim)  # max width of each number
-
+def render(rows):
     for row in rows:
-        string = ' '.join([adjust(Color.this(num), width) for num in row])
-        print(adjust(string, COLS))
+        string = ' '.join([Color.this(num) for num in row])
+        if ansilen(string) <= COLS:
+            print(adjust(string, COLS))
+        else:
+            print("Out of space!".center(COLS))
+            break
 
 
 def main():
     size = int(input("How tall? "))
     rows = [pascal(n) for n in range(1, size+1)]
-    render(rows, len_lim=16)
+    render(rows)
 
 
-LINES, COLS = os.get_terminal_size()  # cols may need to be adjusted depending on number of rows
+COLS, LINES = os.get_terminal_size()
 
-
+if len(sys.argv) == 2:
+    COLS = int(sys.argv[1])
 
 main()
