@@ -1,6 +1,6 @@
 import os
 from functools import lru_cache
-import ansiwrap
+from ansiwrap import ansilen
 
 os.system('color')  # enable ANSI escape characters on windows terminal
 
@@ -52,10 +52,10 @@ def pascal(n):
 
 # center string containing ansi chars given width
 def adjust(s, cols):
-    if ansiwrap.ansilen(s) > cols:
+    if ansilen(s) > cols:
         return s
     else:
-        return f"{((cols-ansiwrap.ansilen(s))//2 + 1)*' '}{s}"
+        return f"{((cols-ansilen(s))//2 + 1)*' '}{s}"
 
 
 def render(rows, len_lim=8):
@@ -72,9 +72,8 @@ def main():
     render(rows, len_lim=16)
 
 
-LINES, COLS = os.get_terminal_size()
+LINES, COLS = os.get_terminal_size()  # cols may need to be adjusted depending of number of rows
 
-if COLS > 200:
-    COLS = 7000  # must be in actual terminal, can be much more
+
 
 main()
